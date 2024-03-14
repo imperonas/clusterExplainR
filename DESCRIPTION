@@ -1,0 +1,29 @@
+Package: clusterExplainR
+Type: Package
+Title: clusterExplainR: Entropy-based post-hoc model-agnostic cluster explanations. 
+Version: 0.1.0
+Authors@R: c(
+    person("Jonas", "Amling", email = "j.amling@gmx.de", role = c("aut","cre")),
+    person("Stephan", "Scheele", email = "stephan.scheele@uni-bamberg.de", role = "aut"),
+    person("Moritz", "Lang", email = "moritz.lang@dab-gmbh.de", role = "aut"))
+Description: This package provides the implemnetation of the clusterExplainR. The explainer allows the creation of post-hoc model-agnostic gloabal and local explanations for mixed data clustering.
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.3.1
+Depends: 
+    R (>= 2.10)
+Imports:
+    data.table,
+    dplyr,
+    NlinTS,
+    utils,
+    data.table,
+    ggplot2,
+    ggpubr,
+    data.tree,
+    DiagrammeR,
+    grid
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

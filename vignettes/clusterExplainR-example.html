@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>clusterExplainR-example</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">clusterExplainR-example</h1>
+
+
+
+<div id="the-clusterexplainr-package" class="section level1">
+<h1>The clusterExplainR package</h1>
+<p>The clusterExplainR package is a valuable tool for explaining data
+clustering, designed as a post-hoc method to enhance exploratory data
+analysis during clustering tasks. It has the unique capability to
+elucidate clustering in mixed data scenarios, making it suitable for
+discrete, continuous, and mixed data clustering. The core concept is
+feature importance, computed by contrasting the entropy similarities
+within a cluster with those across all clusters. This explainer offers
+two primary insights: first, it provides a global perspective on feature
+importance by calculating and summarizing the most crucial features for
+the entire clustering based on mean, max, and min importance scores.
+Second, it generates local explanations for individual clusters,
+shedding light on what makes each cluster unique compared to the overall
+population. These local explanations include visually and verbally
+describing features, and they also incorporate rules aimed at
+encompassing as many instances as possible while maintaining
+precision.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(clusterExplainR)</span></code></pre></div>
+<div id="loading-a-dataset-with-clustering" class="section level2">
+<h2>Loading a dataset with clustering</h2>
+<p>The clusterExplainR package contains a very small dataset for
+demonstrative purpose with manually assigned clusters. These clusters
+are assigned in such a way that the clusterExplainR explanations can be
+demonstrated. The clustering itself is not a “good” clustering! The data
+consists of one categorical and one numerical feature/column:</p>
+<ol style="list-style-type: decimal">
+<li>Gender: categorical feature either Male or Female</li>
+<li>Weight: numerical feature</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> clusterExplainR<span class="sc">::</span>example_mocked_clustering</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>data_without_clusters <span class="ot">&lt;-</span> data[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)]</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>clustering <span class="ot">&lt;-</span> data[[<span class="dv">3</span>]]</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">head</span>(data, <span class="dv">2</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;   Gender Weight Cluster</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; 1 Female   83.7       1</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 2 Female   64.4       1</span></span></code></pre></div>
+</div>
+<div id="global-explanation" class="section level2">
+<h2>Global Explanation</h2>
+<p>To begin with, the ClusterExplainR package generates a global
+explanation. To accomplish this, it requires access to the original
+dataset on which the clustering was performed, as well as the clustering
+results. Additionally, it needs information about which columns in the
+dataset are either numerical or categorical. It’s worth emphasizing that
+for optimal human comprehension, the package operates on the provided
+feature spaces. If the clustering was carried out on a preprocessed
+version of the data, using the processed feature space could make the
+explanations less intuitive for outsiders, including the user.
+Therefore, utilizing the raw data is recommended to ensure clear and
+understandable explanations.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>global_exp <span class="ot">&lt;-</span> <span class="fu">explain_global_clustering</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">data =</span> data_without_clusters, </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">clusterings =</span> clustering,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">numerical_columns =</span> <span class="fu">c</span>(<span class="dv">2</span>), <span class="co"># the 2nd column is numerical &#39;Weight&#39;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">categorical_columns =</span> <span class="fu">c</span>(<span class="dv">1</span>) <span class="co"># the 1st column is categorical &#39;Gender&#39;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span></code></pre></div>
+<div id="global-feature-importance" class="section level3">
+<h3>Global Feature Importance</h3>
+<p>The global explanation generated by ClusterExplainR offers a
+comprehensive view of feature importance scores across all clusters. By
+examining the mean, minimum, and maximum importance scores, users can
+gain insight into which features are crucial for the clustering process.
+These importance scores fall within the range of 0 to 1, where a score
+of 1 signifies that the feature is highly important (as it has only one
+distinct value), while a score of 0 suggests that the feature is
+unimportant, as its entropy does not deviate significantly from that of
+all the features in the dataset. This scale provides a clear indication
+of the relative significance of each feature in the context of the
+clustering analysis.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>global_exp<span class="sc">$</span>feature_importance</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 4</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;   Column_name mean_Importance_score min_Importance_score max_Importance_score</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                       &lt;dbl&gt;                &lt;dbl&gt;                &lt;dbl&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; 1 Gender                      0.480               0                     1    </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 2 Weight                      0.326               0.0598                0.589</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>global_exp<span class="sc">$</span>fis_plot</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="global-feature-visualisation" class="section level3">
+<h3>Global Feature Visualisation</h3>
+<p>Furthermore, the global explanation offers a function that allows
+users to visualize the distributions of the most important features,
+providing insights into how these critical features behave within the
+clustering. The “type” parameter can be configured with values such as
+‘mean,’ ‘min,’ or ‘max,’ corresponding to the importance score
+aggregation methods as displayed in the feature importance table. This
+visualization function helps users gain a deeper understanding of the
+behavior and characteristics of the most influential features, aiding in
+the interpretation of clustering results.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>global_exp<span class="sc">$</span><span class="fu">top_n_features</span>(<span class="dv">2</span>, <span class="at">type =</span> <span class="st">&#39;mean&#39;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAB41BMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYAujgdsXMzMzM6AAA6ADo6AGY6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kLY6kNtNTU1NTW5NTY5Nbm5Nbo5NbqtNjshhnP9mAABmADpmOgBmOjpmOpBmZgBmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtrZmtttmtv9uTU1uTW5uTY5ubm5ubo5ubqtujshuq8huq+SOTU2OTW6OTY6Obk2Obm6Obo6ObquOjo6OjquOjsiOq6uOq8iOq+SOyP+QOgCQOjqQOmaQZjqQZmaQZpCQkDqQkGaQkLaQtpCQtraQttuQ27aQ29uQ2/+l3LaoxJurbk2rbm6rbo6rjk2rjm6rq6uryKuryMiryP+r5OSr5P+uil2yzqWz6sS2ZgC2Zjq2kDq2kGa2kJC2tpC2tra2ttu229u22/+2/7a2/9u2///C0/HIjk3Ijm7Ijo7Iq27Iq47IyMjIyOTI5P/I///Q4f/bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb/9vb///kq27kq47kq6vkyKvkyMjk5Mjk5OTk5P/k/+Tk///r6+vvyMX4dm391tP/tmb/yI7/25D/27b/29v/5Kv//7b//8j//9v//+T////QnSvrAAAACXBIWXMAAA7DAAAOwwHHb6hkAAATZklEQVR4nO2djX8UxRnH5wJ4qQdEwAu0moBVbLEcFa1vbcW2Ji1URTAEtC8a4NCK0obU2jacQJE2aF8herkkx2X/1M4zLzsz+zq7t7czl93f5wPZm5vZfeZ7z7zszM4sckpFCpk2wHYh0wbYLmTaANuFTBtgu5BpA2wXUj+uHq8hVNlzO9lJetMj8/Av4bVX33AP26ieMLGSPPrL1QMIVZdSncYLqIWoKk/pWOgqHaBOreoepwAkJ4/8sjeNcxQaN/I0jgcQ5gPOs3YJJbO3f0AppA2oOzkyk94KpMStzHiPtGQ7oG2h5SsZoJbwGzjkH6n738AFecth8t3I7w+gkSu4vtqJffehK15A+OgP2Af3OL3j+H9i2/WdPDE5rBxaYsWZXxCu4U3HPsMFlFPQ6x9nyYUVTrPyFg7deko9NzkG20QOpEQsZpM4BIHFs8fiS4B608JtOrVtS/DPIdedcWunPcTAxxGCr1l9NeMH9Dh8cXiamUkqAQRp3PPgwyBASjr8+TV2AfUU5Prv00iSFU7TPQwCJOVAShQE6HFhH5YAJLsiyW4TNRgrnIGtH5PmoAFXJGdroodx9NVJmhUFEPwA1/FVrjif0UtV8K96o4Zjdich7Sr5KbyVtDcdQDns9JpQwUqn4NenySUr8DGOhFNVg4qYnAM5ETuNBIie3o0fAahN6v4WOSV1ru5kVSmJDv3kA9RwGApcQc5zzwTSOPSU8FIfIE86ciHvKfj1lcqjRQHVyakCAck5kBMFACKn5/GjAMn/MX+jDtFgkW5dPvEYCgBECwV8htzx8zKvxAX70O1gQGo6TgWbqpyCXZ8nd62Qc+kDpORAThQAqOE4UnwBSG6HaP3TIoW8Ctfg0YWBveMsyA8IjoIAQXV1iaTZOh8ESE3HAeHrKadQAElWRAJSciAnCgEk4gtA3laMYiLxlTacGYhL/ME3Lt8OKmJhgGiMWyd2Im8xiAIU6UGSFTEeJOVAThTqQSy+DMjfD2pWTlPTmrxYOQIx9dXpWEBKBcLOD4njAYXVQQKQbEUkIDkHSiLOuUFyVpV+/4YPkL8n3UZj9KiNKrgH0XsfST4I1S3c5sQBkpugTm0r9FiuIwLoAbfOCwHktkpqK8YAPbCkWKECEufmrZibAyURjdkCg/DpBSA3vgzI+Yx3EJ7ieUXMqS65BVggZqrGAZI7MaKvQnojnn6Q1/N28muqXSkGiHRghBUqIHFu5jBSDuRENCbtGe0SRcyNrwLCzqPezbcQLxakB0z6xbyShqhbDv2tBj2WSEC+njTafYX9HLwghAB6C1u5e8lNx3rSLAckuWSFDEg+N6/ARA7kRCxm5wD2io4MiMX3ALJJcs/enJBpA8JVAopRCShGJaChEDJtgO1Cpg2wXci0AbYLmTbAdiHTBtguZNoA24VMG2C7kGkDbBfqIy2ZGGmEfNkOnEfsTYfFxzfU2xN2nJvb6OACGXqddkfIpPO4h6tXUhrQRslskkTHJUIn1YMBtaJmQ5MCatPhkYPAqTsZZAc/pTh1UgP6AMQItELmdQMBdfdHzZInBdSpwTTR/tNw0nbgfZsPUGID0gPqTdelYzJS19l+sobo3BaqvM6GEiF8x2tIpUlDyDBe3U0G9rXJ+CQd9+tO6pjQ3vYP+NNiUzvEjBliwckd853tr0MtIMYXExqAs5EaUHfSLcyk/LfYXHULpjHqbEiQh1c9UNmAO0zTgpk0GbYPfIKnCi40iiC7zTopNs26MGP7DLdAOnU6AzCjtIDINeEnqMy0Ke4GcXkcTj7jCyrhClQSsrZET8OTwQ9ZZ2UTxwyuxBS14UfAv/yOeTizezlhgTj1TEoDWqkB8WvhE7Np/jplhj+DH2OrlXDVPhrSJsP3PFmHlk+eKqxyk23YP4MvQ6DscJ9OqEsWuKf2AdI1oJMaEPdWbg6/qgxIDvfbR2bhufX0h4SGm6fSAIQLFmmV6B/pcnqAdAxIDwg8mF2KtyD8QsQ38X9KuN++Npmukn5AWnfwVBpFDNc+zbr7R7octyAakI4BfTTzTpOeAGZ94AEZcSF4goJW0lI4TcLryO2sZYYpXDkXrcoMTyU/hxGmzhg5Nf0jXc6tpF2LGukM6KOSdmgJdh+FoN7quI0sb+Z5OE2hFLom/vY0qVRd+8A4liq+mZcmkflcMr8cs8C1qMlmyRIa0E8zn0qR/bSs1Q6oxJIbgDKxRVtRPf0M1SbPBQZdK7EBKANzEijqXjFLtVDIo9GJDUAZWLOphUwbYLuQaQNsFzJtgO1Cpg2wXci0AbYLmTbAdqG0Ce+FKfwb/aiJTPD+9R+kCHBNKAGFpS0BxaQtAcWkLQHFpC0BxaQtAcWk7RcQ01c+9XnCBLIbEDtPAKB72srAgyZw5IkSUAkoGtD9F8YfuUuOVsbH9y2WgDyANs5OOXcehaP1pxfZUQlI0v2XFgkaKnFUAuJInr3r3H9xjn2iHvQgFvydYP8GJpQ2YY6AVh4RgNaP7J2TTSg9yPF6kDgqAXEkSh3kLEypgCYKD2jj7POs5pELWwlIiPaDSBs/Pq7WQVcnSkCRJpSASkAloBJQCYhp46ynCSkBqcI9tBU27FBkQN3Jh075AkHQoVWtKygg2Ilm98d+e9affYcVMX4r7ZgfkzZSxHofwMYwu694gtePTJH7RmHdvUJ6ENHaB7BM5ZCyK7B6U11wQFirP0fuPqFE918uAbnqkY1Mv7MTVaSnZhfKIibRoft0XUfS4+r4plqdUrAE0NWJXAH1SNFiLT3bgyzEumIC6k6S3YzZh8ceDlm1VVxAPb0N7QsM6OZHzGluvBGx5q+4gNxqJ7z+KTCgzw4efKJW2XUQ9ASyHBDo2oQzcW2QM4dI/cg3M6faE5HQAkAQM/cidvPyh7XKm5dBH0fW1kUFhCvpE0/Gr8cuMiBNFRMQNPG9m5e5PiqbeQ8gusO6W0lb3ooZAAT1T+/EQa6oyqiYgBKoBKSnAECjPvmTRX+rKbOAbl3+KNa6e4Ee5Ad0z6fob233oOsP0c14IvenKTCgNiJN2aHpyLewFRcQeQdRC4nXZ5WAVJFRjiaqph7uKAIgXMIaJaAQQLDXfqcG+xGWRSwQEN0FrsreDVQC8l8XXgG2dT7m5ZJFBsQ5Rc9ulIA0rCssoN7nVFE+VGBA7hsAU44HZQ9IrDhcPzI+PiWbYAJQE9fR/YwHZQ5IrDiEp2/Wvz9nFhDpJMYrR0Bitc8KYFJW+5icWbUGUNB6Mf6YZN4Th47nlaEegbMz5QhIWQQFa6MkE8z0pEN70HfGTQCSPej+Cy4fY4BWp9Hu4Gmf9Wd+aAKQtOIQnrQ1DSh82mfj3Hu0iEU/J+0H5P8Ror/1SKw4VPiYAhQ+7XPneTN1kFhxeGccZLgVCxWuCgwBCpFtgOjPx+vIQgPq/Q6Xrl7AzHzpQUTXawiJt6CXgLxqo8pJOnBfjiiGTfuQ241yTDoYEJ3VGJkfllmNiWslILsAwbQPYdOOnJwvLiCYdv47BnSjNhyVdP6AnEvsVizyFRS2ALpqAJBz4zGMZ+xwrHWFBaRrXWEBrUVO+BQcUO/6TlIBbQ3eXaDwgFZhuerYwbEamZ8vAXkBdSfR1iuc1FA8vJAzoJagMiSPv+QLiDyfyBXdk2bSAuRPFv1tAl27NnEtx3kx5faLPGYWqmJ6kAJoOG5WS0AloD4BXS0BWQWILQkny8KHo5LOGZC8KtyaJ8zsASStV02/ZnUzA0qgYgLq/uJNnTXzxQVEXgP9Xe/2dyUgWTfgIeBdp2IdqbCAsFZhH8Uth4ZjKYKhSroH4/aV3WUrFtWK3Xp9R9kPKpv5ZICiO4q+hRLFAxR5q+FfKFE8QNITrv6nXP0LJYoHKFbqQgknmzHpCUlJjLEQkGehxL1sPEgGpFpnK6A1st7w5oe/9DTz3oUSeQESC+rk968ZA9Q9EDIe5FsokRMgsaAOXnK4zw+IEsoNUBMhuNXAPWn1ARj/QomcAEmLWRb2/ibAg/IFBJOH9DE8z8yqf6FEToCUBXWMlLugjmiAM4fIF8I2N2nk94xiHCBlQV1QHZSvBxFAsKgut1mNNB5kEBBZktnOc3ucBHWQDYBw8TpMnrLPbW4+vhV7Xrx+1gJABEwTVaIfc80RkPQKPysAOavfniej01HjZVb1pPMGRNWLt66YgPre036zA+p7T/tNDSiLPe03NaAs9rTf1ICy2NN+cwPKYE/7zQ5IU4UGtHpibGzsSa1nGLQA+WMq38qA9NAYBtRidXTUg/bJPSgU0NB5UBuhh287a++jyK26igvIXaPRyvZmddMAGlRPugRUFEDuip+Mx6Q3DSBc94xAC7/qndUoATHBWNmWsZ1ZvxVh8wByevAeYyS9K7ME5NfnOtYZBgTKe+JwTe8doo4VgAx4kOY+riWgElCRATETSkCB2cfXXl5e/np5WTImESA23DqA9WKmAcGlHIKHAFp2D4jR2oAGt+LQLCB8nTNnzuP//YAII30P2hX6GLDyqOBwAQI6mM/5C7MUkReQINRPHSQ/KjhcgDif2QuzswSRD9DXnFA/gJTHdIYI0OjoRYpnlgACRH5Ay55mLQ0g8aBXqgfJQwENeNAeu89FxocBmmU1kQKIEeoHkPKooHsin8K/0Y+aISAoXhcZHw5o9gJHJAFa9rT3gYAiJw3VtzcMCSBS/VxkfAQgVlkrgJY1AEUqsA6yHBDhw/HIgFg5UwF91R8g5VHBoQAkWvcAQKQ9UwABoX4ABfaD7ABECEW37gGACCKlqMld6hSAfNZZDWhUNO+hgHjHKKBb0jegUD0YHyVF1CBFARqlrZfc/QkDJP89fx4zLQCgUVq6Lnpa93hAlNBmB8TwiOYrAaALQGiwgPJTICBW9ch8EgECHxo6QKL59DWkCqBR6jsXz3har0SAMKGvhgyQGEbwDyi4gEZH3ZJF6ma59UoGaHZ2wB608aujv/5BljFFF97fmb969RugiYnRM6JknffeetkFaP3dL+a+mMswprgJ9A8oYLchwwMTWUq+OEqWeR2t/+TT995ejI+nHVMMIwQOKETMTKQPGGgdtH7slb9mGTPIg0BDCmjjP1j/zTJmVB00hID+/Wesv9yNj6gdUwwjBA4oDBsgZ+Pc0aP7tOog3ZhixWHQgMLQAYK26Uu9Slo7ZqCGFtCrK1Oazbx2zEANKyDnX//75NWsY2rIf+vrC0kRgNIbFC7NVixjDQ2g9R8fO/aKTiu28K1jmjG1NDyA3tWN+c9jPzPhaomEsj/lxtmjR5/RbJs2Pn06fSuWi1D2p9T3oI1Pf2S9C6HsT3n/Fc1KeuGbP9XscxsUyv6UG1nfahgVyv6U+gNmWQn2xtqn3IdsnB3fOyeN0PLds0SU9SNkN7SIACqUvbn6A2ZZie5+KY/H4pCVR+6qI7RKAAya3FECXphSA5hQ9ubqD5hlpI1zc/BHGguBQ8czOgJIRAAZWXpp0RPw4pw6oOKYHjDLRrhUQPGRRtPWn30HipgyvgZ+IQKYB/nG4tQhOWcQgL7MvdaFHXixF0njsbCjIc6qPEJL/koBtK4RAaSI7Z1TB3WdQQD6ZHFlKj5W5lqYUjzI5w6Qc3nwFkNd2bcopzky/ty5PDzIGCC5DnrZV6EswC6rIoB5ilrlKJUSE8rc0j/+9k/P5du7gcxuvL0oj8cukCImhdCKXAQwDxIBpFJ61DOo65gdk85MuJej9HrIodqpUWoe0Io3DQ6Aoxz6QZtLyLQBtguZNsB2IdMG2C5k2gDbhUwbYLuQaQNsFzJtgO1Cpg2wXci0AbYLmTbAdiHTBtguZNoA24VMG2C7kGkDbBcybYBH94LVf+REJ5aE+sjMIBSwEJ+sNQ+O7F8L565C98WNf2Y8UKiPzAxCJaAYlYBiVAKKUQkoRiWgGA05oBaqzHjDVn1bu/emGw7d1xxid7b7kvjSdPfzOMMNqDvp36M8IP+tKkCCnWBbqBEUwR/U5vvGxgPqiFd0xwCCl4S4BscAaodtSIaCAsMU5Az+MOIOTZrj1rYlLUDU6RwNQG0pI9GAwA5xpWhAQL0VuAE7CiQRLPhFqvTlLXW6aTD9VGfH+DKvYfMxFNnXsI3ETPiPpG2INDivNI3rQnGAmpWTuh7Uhgw3uR3xRawT+Pb4JIBIHknWWyPzvekqOYYwOIZ/nRopXHXFRyRA9G+twdMQB6tV+al1ACUpYo5SucUC6t+DSC7WlqRMs7A2eD3+D+edVVRSLmRALNRNg+OSNKJ6yxYQ+bH0AHVq/vYnFSBSn+HmqT0iZRbKBwdBAQV6ELzjtsrSsJd31FlMnpVMAXUnxZ7q8R4kvK0vQN3JCqn7ogFxh8AXlQGRrSyxpwEgVukMEBBzTl1Aor7qCxCB0a6oRQy8s00zztiw/LdIoASIFiueRgAaQBFT+MQAglxl5EGQMSivvGKGnLmVNMlsE3xB6QeBq8PbkYnXkc8NGkGAHkAlTQuxZivWQgF94FSAoB6pnCY5pBVKE1XdZp7WUdR5mlJPGhr27+EfqM3CeJqK21NpaTbziqzrSesp2FWjpd9RlDWkgEI6FJFKcKshaVgBue6grc1ys5qDSkDDJmTaANuFTBtgu5BpA2wXMm2A7UKmDbBdyLQBtguZNsB2/R+b1LKmVngf/QAAAABJRU5ErkJggg==" /><!-- --></p>
+<p>In summary, the global explanation provided by clusterExplainR
+highlights the significance of the “Gender” feature in describing the
+clusters. However, it’s important to note that the minimum importance
+score of 0 suggests that there is at least one cluster where this
+feature does not contribute to cluster description at all. Upon further
+examination through visualization, it becomes evident that Cluster 3
+exclusively comprises male individuals, making the “Gender” feature
+highly relevant for this cluster. Cluster 1 is also influenced by this
+feature, as it consists of 1 male and 7 females. In contrast, for
+Cluster 2, the “Gender” feature is not relevant, as this cluster
+comprises an equal number of females and males. This nuanced
+understanding of feature importance within individual clusters enhances
+the interpretability of the clustering results.</p>
+</div>
+</div>
+<div id="local-cluster-explanations" class="section level2">
+<h2>Local Cluster Explanations</h2>
+<p>Local explanations in clusterExplainR are designed to provide deeper
+insights into specific clusters. They serve multiple purposes:</p>
+<ul>
+<li><p>Identify Key Features: Local explanations aim to reveal the most
+important features within a given cluster. This helps users understand
+which aspects of the data are particularly relevant for characterizing
+that specific cluster.</p></li>
+<li><p>Inspect Feature Behavior: Users can delve into individual
+features to explore their behavior within the cluster. This allows for a
+more granular understanding of how each feature contributes to the
+cluster’s profile.</p></li>
+<li><p>Instance Relevance: Local explanations provide an indication of
+how well each instance fits into the cluster based on the importance of
+features. This helps users assess the suitability of individual data
+points within the context of the cluster. The measure is called the
+EntityClusterMatchingScore (ECMS).</p></li>
+<li><p>Cluster Representatives: The explanations can create a set of
+cluster representatives, which are chosen based on the highest ECMS and
+cluster membership. These representatives offer a short overview of
+entities within the cluster.</p></li>
+<li><p>Descriptive Rules: Local explanations also provide descriptive
+rules for the cluster. These rules are generated with the aim of
+striking a balance between accuracy and coverage. In other words, they
+aim to describe the cluster as accurately as possible while encompassing
+as many instances as feasible, recognizing the trade-off between
+precision and inclusivity.</p></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>explanation_cl_3 <span class="ot">&lt;-</span> <span class="fu">explain_cluster</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">data =</span> data_without_clusters,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">clusterings=</span> clustering,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">numerical_columns =</span> <span class="fu">c</span>(<span class="dv">2</span>), <span class="co"># the 2nd column is numerical &#39;Weight&#39;</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">categorical_columns =</span> <span class="fu">c</span>(<span class="dv">1</span>), <span class="co"># the 1st column is categorical &#39;Gender&#39;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">cluster =</span> <span class="dv">1</span>, <span class="co"># we want to generate rules for a specific cluster</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">generate_rules =</span> <span class="cn">TRUE</span> <span class="co"># indicate whether or not to create descriptive rules</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>)</span></code></pre></div>
+<div id="local-feature-importance" class="section level3">
+<h3>Local Feature Importance</h3>
+<p>The local feature importance scores provide insights into the
+significance of individual features within the clustering process. As an
+example, for Cluster 3, we observe that “Gender” is the most critical
+feature, with an importance score of 1, indicating its paramount
+importance in defining this cluster. Following closely is the “weight”
+feature, with an importance score of approximately 0.6, signifying its
+significant but slightly lesser contribution to the cluster’s
+characterization.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>explanation_cl_3<span class="sc">$</span>feature_importance</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;    Cluster_id Column_name Importance_score</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;        &lt;char&gt;      &lt;char&gt;            &lt;num&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; 1:          1      Gender        0.4401729</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; 2:          1      Weight        0.3291424</span></span></code></pre></div>
+</div>
+<div id="visualisations-of-features" class="section level3">
+<h3>Visualisations of Features</h3>
+<p>Cluster explanations visualizations comprise two distinct
+functions.</p>
+<p>The first function, “Inspect Feature” takes a feature or column name
+as input and generates a plot illustrating how the values within that
+feature are distributed compared to the overall population.
+Additionally, it provides a verbal description that articulates the
+nature of these feature distributions, aiding in the interpretation of
+their significance.</p>
+<p>The second function is designed to showcase the “n” most important
+features within the cluster. This function helps users quickly identify
+and focus on the key features that play a significant role in defining
+the cluster’s characteristics.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>gender_exploration <span class="ot">&lt;-</span> explanation_cl_3<span class="sc">$</span><span class="fu">inspect_feature</span>(<span class="st">&#39;Gender&#39;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>gender_exploration<span class="sc">$</span>plot</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">cat</span>(gender_exploration<span class="sc">$</span>verbalisation)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; Cluster 1 is described by Gender </span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt;   -  88 % Female  (total: 7 ) </span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   -  12 % Male  (total: 1 )</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>explanation_cl_3<span class="sc">$</span><span class="fu">top_n_features</span>(<span class="dv">2</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="entity-cluster-matching-score" class="section level3">
+<h3>Entity Cluster Matching Score</h3>
+<p>Cluster Membership relevance is quantified by the ECMS (Exemplar
+Cluster Membership Score), which indicates how well an individual
+instance aligns with a specific cluster. The ECMS values are computed
+for all instances within the cluster, resulting in a vector that
+reflects the degree of fit for each instance.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>explanation_cl_3<span class="sc">$</span>ECMS</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt;  [1] 0.95710632 0.78232742 0.99767184 0.99163983 0.99936429 0.90881993</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt;  [7] 0.92499882 0.91417292 0.70413218 0.92210002 0.96578197 0.62023798</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; [13] 0.10337403 0.37164279 0.41299875 0.50044703 0.37164279 0.08173742</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; [19] 0.08173742 0.47333991</span></span></code></pre></div>
+<p>Additionally, the package includes a “cluster_representative”
+function, which serves to identify the “n” entries within the cluster
+that exhibit the highest ECMS scores among all instances assigned to
+that cluster. These representatives are particularly informative as they
+encapsulate the most typical or exemplary cases within the cluster,
+helping users gain a clearer understanding of its characteristics.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>explanation_cl_3<span class="sc">$</span><span class="fu">cluster_representative</span>(<span class="dv">1</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt;   Gender Weight Cluster      ECMS</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; 1 Female     74       1 0.9993643</span></span></code></pre></div>
+</div>
+<div id="descriptive-rules" class="section level3">
+<h3>Descriptive Rules</h3>
+<p>Finally, the package offers descriptive rules that are generated
+through an optimization process based on the F1 score. This optimization
+strategy results in rules that strike a balance between accuracy and
+coverage, effectively navigating the trade-off between providing precise
+descriptions of the cluster while ensuring inclusivity by covering as
+many instances as possible. These rules offer a concise yet informative
+way to characterize and understand the cluster’s key attributes and
+properties.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>rule_cl_3 <span class="ot">&lt;-</span> explanation_cl_3<span class="sc">$</span>rule</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">cat</span>(rule_cl_3<span class="sc">$</span>verbalization)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; Rule: 1 ( Acc: 80 Cov: 87.5 , in %)</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt;  Gender is  Female </span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;  AND Weight is between  64.4 and 85.1</span></span></code></pre></div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
