@@ -6,7 +6,7 @@ This R package provides the implementation of the clusterExplainR. The explainer
 
 Simply install the R package with its dependencies and feel free to explain your clusters. Be aware, that the current implementation cannot deal with missing values, therefore please ensure that you do an appropriate preprocessing.
 
-A usage example is provided in the [clusterExplain-R example vignette](/vignettes/clusterExplainR-example.html)
+A usage example is provided in the [clusterExplain-R example vignette](/vignettes/clusterExplainR-example.Rmd)
 
 ## Cite Us
 
