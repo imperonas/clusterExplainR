@@ -10,7 +10,19 @@ A usage example is provided in the [clusterExplain-R example vignette](/vignette
 
 ## Cite Us
 
-We are currently working on a publication and will provide you the BibTex as soon as we published the corresponding paper.
+```bibtex
+@InProceedings{clusterExplainR,
+  author="Amling, Jonas and Scheele, Stephan and Slany, Emanuel and Lang, Moritz and Schmid, Ute",
+  title="Explainable AI for Mixed Data Clustering",
+  booktitle="Explainable Artificial Intelligence",
+  year="2024",
+  publisher="Springer Nature Switzerland",
+  address="Cham",
+  pages="42--62",
+  isbn="978-3-031-63797-1",
+  doi="10.1007/978-3-031-63797-1_3"
+}
+```
 
 ## Thanks
 
